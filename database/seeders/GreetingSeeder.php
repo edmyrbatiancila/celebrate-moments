@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Greeting;
+use App\Models\Media;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -28,6 +29,15 @@ class GreetingSeeder extends Seeder
                 foreach ($recipients as $recipient) {
                     $greeting->addRecipient($recipient->id);
                 }
+
+                // $availableMedia = Media::where('user_id', $greeting->creator_id)->get();
+                // if ($availableMedia->isNotEmpty()) {
+                //     $mediaToAttach = $availableMedia->random(min(fake()->numberBetween(1, 3), $availableMedia->count()));
+                    
+                //     foreach ($mediaToAttach as $index => $media) {
+                //         $greeting->media()->attach($media->id, ['order' => $index + 1]);
+                //     }
+                // }
             }
         }
     }

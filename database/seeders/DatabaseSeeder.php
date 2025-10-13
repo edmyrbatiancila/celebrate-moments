@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CreatorProfileSeeder::class,
             TemplateSeeder::class,
+            MediaSeeder::class,
             GreetingSeeder::class,
             GreetingAnalyticsSeeder::class
         ]);
