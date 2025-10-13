@@ -16,16 +16,23 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::firstOrCreate(
-            ['email' => 'admin@gmail.com'],
-            [
-                'name' => 'Admin Nistrator',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'is_creator' => true,
-                'is_verified_creator' => true,
-                'current_role' => 'creator'
-            ]
-        );
+        // User::firstOrCreate(
+        //     ['email' => 'admin@gmail.com'],
+        //     [
+        //         'name' => 'Admin Nistrator',
+        //         'password' => Hash::make('password'),
+        //         'email_verified_at' => now(),
+        //         'is_creator' => true,
+        //         'is_verified_creator' => true,
+        //         'current_role' => 'creator'
+        //     ]
+        // );
+        $this->call([
+            UserSeeder::class,
+            CreatorProfileSeeder::class,
+            TemplateSeeder::class,
+            GreetingSeeder::class,
+            GreetingAnalyticsSeeder::class
+        ]);
     }
 }

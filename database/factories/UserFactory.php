@@ -29,11 +29,54 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'phone' => fake()->optional()->phoneNumber(),
+            'timezone' => fake()->timezone(),
+            'is_creator' => fake()->boolean(30),
+            'is_verified_creator' => false,
+            'current_role' => 'celebrant',
+            'date_of_birth' => fake()->optional()->date('Y-m-d', '-18 years'),
             'two_factor_secret' => Str::random(10),
             'two_factor_recovery_codes' => Str::random(10),
             'two_factor_confirmed_at' => now(),
         ];
     }
+
+    /**
+     * Create a creator user.
+     */
+    public function creator(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_creator' => true,
+            'current_role' => 'creator',
+            'is_verified_creator' => fake()->boolean(70),
+        ]);
+    }
+
+    /**
+     * Create a verified creator.
+     */
+    public function verifiedCreator(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_creator' => true,
+            'is_verified_creator' => true,
+            'current_role' => 'creator'
+        ]);
+    }
+
+    /**
+     * Create a celebrant user.
+     */
+    public function celebrant(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_creator' => false,
+            'is_verified_creator' => false,
+            'current_role' => 'celebrant'
+        ]);
+    }
+
 
     /**
      * Indicate that the model's email address should be unverified.

@@ -53,15 +53,98 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'date_of_birth' => 'date',
+            'creator_upgraded_at' => 'datetime',
+            'is_creator' => 'boolean',
+            'is_verified_creator' => 'boolean',
+            'specialties' => 'array',
         ];
     }
 
-    // Relationships TODO: Define relationships once other models are created:
-    // public function creatorProfile()
-    // public function celebrantProfile()
-    // public function greetingsCreated()
-    // public function greetingsReceived()
-    // public function connections()
-    // public function reviews()
-    // public function wishlist()
+    // Relationships
+    public function creatorProfile()
+    {
+        return $this->hasOne(CreatorProfile::class);
+    }
+    public function greetingsCreated()
+    {
+        return $this->hasMany(Greeting::class, 'creator_id');
+    }
+    public function greetingsReceived()
+    {
+        return $this->belongsToMany(Greeting::class, 'greeting_recipients', 'recipient_id', 'greeting_id')
+            ->withPivot('sent_at', 'delivered_at', 'viewed_at', 'is_thanked', 'thank_you_message')
+            ->withTimestamps();
+    }
+    public function connectionsRequested()
+    {
+        return $this->hasMany(Connection::class, 'requester_id');
+    }
+
+    public function connectionsReceived()
+    {
+        return $this->hasMany(Connection::class, 'receiver_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'reviewer_id');
+    }
+
+    public function reviewsReceived()
+    {
+        return $this->hasMany(Review::class, 'reviewee_id');
+    }
+
+    public function wishlist()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function media()
+    {
+        return $this->hasMany(Media::class);
+    }
+
+    // Helper methods for role management:
+    public function isCreator(): bool
+    {
+        return $this->is_creator;
+    }
+
+    public function isVerifiedCreator(): bool
+    {
+        return $this->is_verified_creator;
+    }
+
+    public function canCreateGreetings()
+    {
+        return $this->is_creator && $this->current_role === "creator";
+    }
+
+    public function switchToCreatorRole()
+    {
+        $this->current_role = 'creator';
+        $this->save();
+    }
+
+    public function switchToCelebrantRole()
+    {
+        $this->current_role = 'celebrant';
+        $this->save();
+    }
+
+    public function upgradeToCreator()
+    {
+        $this->is_creator = true;
+        $this->creator_upgraded_at = now();
+        $this->save();
+
+        // Create creator profile
+        $this->creatorProfile()->create([
+            'bio' => null,
+            'verification_status' => 'pending'
+        ]);
+    }
+
 }

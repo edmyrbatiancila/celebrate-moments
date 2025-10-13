@@ -13,7 +13,7 @@ class CreatorProfilePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class CreatorProfilePolicy
      */
     public function view(User $user, CreatorProfile $creatorProfile): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class CreatorProfilePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->is_creator && !$user->creatorProfile;
     }
 
     /**
@@ -37,7 +37,7 @@ class CreatorProfilePolicy
      */
     public function update(User $user, CreatorProfile $creatorProfile): bool
     {
-        return false;
+        return $user->id === $creatorProfile->user_id;
     }
 
     /**
@@ -45,7 +45,7 @@ class CreatorProfilePolicy
      */
     public function delete(User $user, CreatorProfile $creatorProfile): bool
     {
-        return false;
+        return $user->id === $creatorProfile->user_id;
     }
 
     /**
