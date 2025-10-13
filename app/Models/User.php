@@ -22,6 +22,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'avatar',
+        'timezone',
+        'is_creator',
+        'is_verified_creator',
+        'current_role',
+        'date_of_birth'
     ];
 
     /**
@@ -48,4 +55,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relationships TODO: Define relationships once other models are created:
+    // public function creatorProfile()
+    // public function celebrantProfile()
+    // public function greetingsCreated()
+    // public function greetingsReceived()
+    // public function connections()
+    // public function reviews()
+    // public function wishlist()
 }

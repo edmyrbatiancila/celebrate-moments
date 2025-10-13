@@ -22,6 +22,9 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Admin Nistrator',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
+                'is_creator' => true,
+                'is_verified_creator' => true,
+                'current_role' => 'creator'
             ]
         );
     }
