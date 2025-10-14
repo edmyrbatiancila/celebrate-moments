@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('wishlists', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('creator_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->enum('greeting_type', ['video', 'audio', 'text', 'mixed']);
+            $table->string('occasion');
+            $table->json('budget_range')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

@@ -27,17 +27,21 @@ class GreetingSeeder extends Seeder
                 // Assign 1-3 random recipients to each greeting
                 $recipients = $celebrants->random(fake()->numberBetween(1, 3));
                 foreach ($recipients as $recipient) {
-                    $greeting->addRecipient($recipient->id);
+                    $greeting->recipients()->attach($recipient->id, [
+                        'sent_at' => $greeting->status === 'sent' ? now() : null,
+                        'delivered_at' => $greeting->status === 'delivered' ? now() : null,
+                        'viewed_at' => $greeting->status === 'viewed' ? now() : null,
+                    ]);
                 }
 
-                // $availableMedia = Media::where('user_id', $greeting->creator_id)->get();
-                // if ($availableMedia->isNotEmpty()) {
-                //     $mediaToAttach = $availableMedia->random(min(fake()->numberBetween(1, 3), $availableMedia->count()));
+                $availableMedia = Media::where('user_id', $greeting->creator_id)->get();
+                if ($availableMedia->isNotEmpty()) {
+                    $mediaToAttach = $availableMedia->random(min(fake()->numberBetween(1, 3), $availableMedia->count()));
                     
-                //     foreach ($mediaToAttach as $index => $media) {
-                //         $greeting->media()->attach($media->id, ['order' => $index + 1]);
-                //     }
-                // }
+                    foreach ($mediaToAttach as $index => $media) {
+                        $greeting->media()->attach($media->id, ['order' => $index + 1]);
+                    }
+                }
             }
         }
     }

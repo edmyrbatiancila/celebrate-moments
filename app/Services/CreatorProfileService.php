@@ -41,4 +41,30 @@ class CreatorProfileService
             'verification_status' => 'rejected'
         ]);
     }
+
+    public function getCreatorStats(CreatorProfile $profile): array
+    {
+        return [
+            'total_greetings' => $profile->greetings()->count(),
+            'total_templates' => $profile->templates()->count(),
+            'average_rating' => $profile->rating,
+            'total_reviews' => $profile->reviews()->count(),
+            'earnings_this_month' => $this->calculateMonthlyEarnings($profile),
+        ];
+    }
+
+    private function calculateMonthlyEarnings(CreatorProfile $profile): float
+    {
+        // Calculate earnings from greetings created this month
+        return $profile->greetings()
+            ->where('created_at', '>=', now()->startOfMonth())
+            ->where('status', 'delivered')
+            ->sum('price') ?? 0;
+    }
+
+    public function updateRating(CreatorProfile $profile): void
+    {
+        $averageRating = $profile->reviews()->avg('rating');
+        $profile->update(['rating' => round($averageRating, 2)]);
+    }
 }

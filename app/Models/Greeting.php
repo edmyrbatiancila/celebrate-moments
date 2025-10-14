@@ -70,10 +70,9 @@ class Greeting extends Model
 
     public function media()
     {
-        return $this->belongToMany(Media::class, 'greeting_media')
+        return $this->belongsToMany(Media::class, 'greeting_media')
             ->withPivot('order')
-            ->withTimtestamps()
-            ->orderBy('pivot_order');
+            ->withTimestamps();
     }
 
     public function template()

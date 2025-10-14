@@ -29,7 +29,7 @@ class CreatorProfilePolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_creator && !$user->creatorProfile;
+        return $user->is_creator && !$user->creatorProfile; // Only creators without a profile can create one
     }
 
     /**
@@ -37,7 +37,7 @@ class CreatorProfilePolicy
      */
     public function update(User $user, CreatorProfile $creatorProfile): bool
     {
-        return $user->id === $creatorProfile->user_id;
+        return $user->id === $creatorProfile->user_id; // Only the owner can update their profile
     }
 
     /**
@@ -45,7 +45,25 @@ class CreatorProfilePolicy
      */
     public function delete(User $user, CreatorProfile $creatorProfile): bool
     {
-        return $user->id === $creatorProfile->user_id;
+        return $user->id === $creatorProfile->user_id; // Only the owner can delete their profile
+    }
+
+    /**
+     * Determine whether the user can verify creator profiles.
+     */
+    public function verify(User $user): bool
+    {
+        // Add admin check logic here if you have admin roles
+        return false; // For now, no one can verify (implement admin logic later)
+    }
+
+    /**
+     * Determine whether the user can reject creator profiles.
+     */
+    public function reject(User $user): bool
+    {
+        // Add admin check logic here if you have admin roles
+        return false; // For now, no one can reject (implement admin logic later)
     }
 
     /**

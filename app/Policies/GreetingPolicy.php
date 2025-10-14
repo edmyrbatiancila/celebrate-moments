@@ -13,7 +13,7 @@ class GreetingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true; // Anyone can view greetings list
     }
 
     /**
@@ -21,7 +21,9 @@ class GreetingPolicy
      */
     public function view(User $user, Greeting $greeting): bool
     {
-        return false;
+        // Creator can view their own greetings, recipients can view greetings sent to them
+        return $user->id === $greeting->creator_id || 
+            $greeting->recipients()->where('recipient_id', $user->id)->exists();
     }
 
     /**
@@ -29,7 +31,7 @@ class GreetingPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->is_creator; // Only creators can create greetings
     }
 
     /**
@@ -37,7 +39,7 @@ class GreetingPolicy
      */
     public function update(User $user, Greeting $greeting): bool
     {
-        return false;
+        return $user->id === $greeting->creator_id; // Only the creator can update their greeting
     }
 
     /**
@@ -45,7 +47,15 @@ class GreetingPolicy
      */
     public function delete(User $user, Greeting $greeting): bool
     {
-        return false;
+        return $user->id === $greeting->creator_id; // Only the creator can delete their greeting
+    }
+
+    /**
+     * Determine whether the user can send the greeting.
+     */
+    public function send(User $user, Greeting $greeting): bool
+    {
+        return $user->id === $greeting->creator_id && $greeting->status === 'draft';
     }
 
     /**

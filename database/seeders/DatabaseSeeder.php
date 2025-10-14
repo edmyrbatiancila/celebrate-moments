@@ -33,7 +33,11 @@ class DatabaseSeeder extends Seeder
             TemplateSeeder::class,
             MediaSeeder::class,
             GreetingSeeder::class,
-            GreetingAnalyticsSeeder::class
+            GreetingAnalyticsSeeder::class,
+            ConnectionSeeder::class,
+            ReviewSeeder::class,
+            WishlistSeeder::class,
+            CollaborationSeeder::class
         ]);
     }
 }
