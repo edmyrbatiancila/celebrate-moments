@@ -65,15 +65,13 @@ class TemplateController extends Controller
             ], 403);
         }
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'category' => 'required|string|in:birthday,anniversary,holiday,wedding,graduation,custom',
-            'content_structure' => 'required|array',
-            'preview_image_url' => 'nullable|url',
-            'is_premium' => 'boolean',
-            'price' => 'nullable|numeric|min:0',
-            'theme' => 'required|string|max:100',
+                        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'description' => 'sometimes|nullable|string',
+            'category' => 'sometimes|string|max:100',
+            'content_structure' => 'sometimes|array',
+            'preview_image' => 'sometimes|nullable|image|max:2048',
+            'is_premium' => 'sometimes|boolean',
         ]);
 
         try {

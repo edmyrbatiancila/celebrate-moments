@@ -43,13 +43,8 @@ class AuthController extends Controller
             'current_role' => $request->is_creator ? 'creator' : 'celebrant',
         ]);
 
-        // Create creator profile if user is a creator
-        if ($user->is_creator) {
-            $this->creatorProfileService->createProfile($user->id, [
-                'bio' => $request->bio,
-                'specialties' => $request->specialties ?? [],
-            ]);
-        }
+        // Note: Creator profile is created when user first accesses the creator profile endpoints
+        // This allows for a cleaner separation between user registration and profile setup
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

@@ -229,8 +229,8 @@ class AnalyticsController extends Controller
 
         // Top creators by greetings
         $topCreatorsByGreetings = User::where('is_creator', true)
-            ->withCount('greetings')
-            ->orderBy('greetings_count', 'desc')
+            ->withCount('greetingsCreated')
+            ->orderBy('greetings_created_count', 'desc')
             ->take(10)
             ->get();
 

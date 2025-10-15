@@ -34,43 +34,55 @@ class CreatorProfileController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage or update existing profile.
      */
     public function store(Request $request)
     {
-        // Only authenticated users who are creators can create profiles
+        // Only authenticated users who are creators can create/update profiles
         if (!Auth::user()->is_creator) {
             return response()->json([
                 'message' => 'Only creators can create creator profiles'
             ], 403);
         }
 
-        // Check if user already has a profile
-        if ($this->repository->findByUserId(Auth::id())) {
-            return response()->json([
-                'message' => 'Creator profile already exists'
-            ], 409);
-        }
-
-        $request->validate([
+        $validated = $request->validate([
             'bio' => 'nullable|string|max:1000',
             'specialties' => 'nullable|array',
             'specialties.*' => 'string|in:birthday,anniversary,holiday,wedding,graduation,custom',
             'portfolio_url' => 'nullable|url',
-            'hourly_rate' => 'nullable|numeric|min:0',
             'availability_status' => 'boolean',
         ]);
 
         try {
-            $profile = $this->service->createProfile(Auth::id(), $request->validated());
+            // Check if user already has a profile
+            $existingProfile = $this->repository->findByUserId(Auth::id());
             
-            return response()->json([
-                'message' => 'Creator profile created successfully',
-                'profile' => $profile->load('user')
-            ], 201);
+            if ($existingProfile) {
+                // Update existing profile
+                $updated = $this->service->updateProfile($existingProfile, $validated);
+                
+                if ($updated) {
+                    return response()->json([
+                        'message' => 'Creator profile updated successfully',
+                        'profile' => $existingProfile->fresh()->load('user')
+                    ], 200);
+                }
+                
+                return response()->json([
+                    'message' => 'Failed to update creator profile'
+                ], 500);
+            } else {
+                // Create new profile
+                $profile = $this->service->createProfile(Auth::id(), $validated);
+                
+                return response()->json([
+                    'message' => 'Creator profile created successfully',
+                    'profile' => $profile->load('user')
+                ], 201);
+            }
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to create creator profile',
+                'message' => 'Failed to create/update creator profile',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -210,5 +222,32 @@ class CreatorProfileController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Get the current authenticated user's creator profile.
+     */
+    public function myProfile()
+    {
+        if (!Auth::user()->is_creator) {
+            return response()->json([
+                'message' => 'Only creators can access creator profiles'
+            ], 403);
+        }
+
+        $profile = $this->repository->findByUserId(Auth::id());
+        
+        if (!$profile) {
+            return response()->json([
+                'message' => 'Creator profile not found',
+                'has_profile' => false
+            ], 404);
+        }
+
+        return response()->json([
+            'profile' => $profile->load(['user', 'greetings', 'templates']),
+            'stats' => $this->service->getCreatorStats($profile),
+            'has_profile' => true
+        ]);
     }
 }

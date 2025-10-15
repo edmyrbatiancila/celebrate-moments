@@ -22,9 +22,11 @@ Route::prefix('auth')->group(function () {
 // Protected API routes
 Route::middleware('auth:sanctum')->group(function () {
     // User management
+    Route::get('users/profile', [UserController::class, 'profile']);
     Route::apiResource('users', UserController::class);
 
     // Creator Profiles
+    Route::get('creator-profiles/my-profile', [CreatorProfileController::class, 'myProfile']);
     Route::apiResource('creator-profiles', CreatorProfileController::class);
     Route::post('creator-profiles/{creatorProfile}/verify', [CreatorProfileController::class, 'verify']);
     Route::post('creator-profiles/{creatorProfile}/reject', [CreatorProfileController::class, 'reject']);

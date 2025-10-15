@@ -56,10 +56,22 @@ class CreatorProfileService
     private function calculateMonthlyEarnings(CreatorProfile $profile): float
     {
         // Calculate earnings from greetings created this month
-        return $profile->greetings()
+        // For now, calculate based on delivered greetings count and pricing tier
+        $deliveredGreetings = $profile->greetings()
             ->where('created_at', '>=', now()->startOfMonth())
             ->where('status', 'delivered')
-            ->sum('price') ?? 0;
+            ->count();
+
+        // Base rate per greeting based on pricing tier
+        $baseRate = match($profile->pricing_tier) {
+            'enterprise' => 25.0,
+            'premium' => 15.0,
+            'basic' => 8.0,
+            'free' => 2.0,
+            default => 2.0
+        };
+
+        return $deliveredGreetings * $baseRate;
     }
 
     public function updateRating(CreatorProfile $profile): void

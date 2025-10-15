@@ -102,6 +102,18 @@ class UserController extends Controller
     }
 
     /**
+     * Get the authenticated user's profile
+     */
+    public function profile(Request $request)
+    {
+        $user = User::with(['creatorProfile'])->find(Auth::id());
+        
+        return response()->json([
+            'user' => $user
+        ]);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
